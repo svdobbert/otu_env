@@ -27,3 +27,5 @@ Pkg.add("MixedModels")          # providing capabilities linear and generalized 
 Pkg.add("MixedModelsMakie") 	# special graphics for mixed models
 Pkg.add("StatsBase")
 Pkg.add("CategoricalArrays")
+Pkg.add("Compose")
+Pkg.add("Cairo")

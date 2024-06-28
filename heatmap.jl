@@ -14,7 +14,7 @@ function create_heatmap(df, year, bins, env_var, label)
 	standard = fit(UnitRangeTransform, heatmap_input_agg.value; dims = 1)
 	heatmap_input_agg.value_std = StatsBase.transform(standard, heatmap_input_agg.value)
     
-    set_default_plot_size(27cm, 20cm)
+    set_default_plot_size(15cm, 20cm)
 	cpalette(p) = get(ColorSchemes.BuPu_3, p)
 	Gadfly.plot(
 		heatmap_input_agg,
@@ -31,6 +31,11 @@ function create_heatmap(df, year, bins, env_var, label)
 	)
 end
 
-create_heatmap(reshaped_input, "2020", 25, "temp", "Temperature (PC1)")
-create_heatmap(reshaped_input, "2021", 25, "temp", "Temperature (PC1)")
-create_heatmap(reshaped_input, "2022", 25, "temp", "Temperature (PC1)")
+input = filter(row -> row.variable == "Acidobacteriae" || row.variable == "Alphaproteobacteria", reshaped_input)
+create_heatmap(input, "2020", 25, "temp", "Temperature (PC1)")
+create_heatmap(input, "2021", 25, "temp", "Temperature (PC1)")
+create_heatmap(input, "2022", 25, "temp", "Temperature (PC1)")
+
+
+# TODO
+# plot for one class and months/seasons on x-Axis

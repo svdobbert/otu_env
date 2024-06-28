@@ -9,6 +9,8 @@ using CSVFiles          # read/write CSV and similar formats
 using Downloads         # file downloads
 using DataFrames        # versatile tabular data format
 using GZip              # utilities for compressed files
+using Printf
+using Cairo
 
 # inport data
 at = DataFrame(load(File(format"CSV", "./input-data/air-temperature.csv.gz")))
@@ -27,4 +29,5 @@ class_mean = DataFrame(load(File(format"CSV", "./input-data/class-mean-clusterd.
 #using CategoricalArrays # similar to the factor type in R
 
 include("services.jl")
+include("constants.jl")
 include("create-input-data.jl")

@@ -34,8 +34,9 @@ Gadfly.plot(
 	),
 )
 
-form = @formula(value ~ 1 + AT + ST + (1 | year/variable) + (1 | id));
-gm2 = fit(MixedModel, form, reshaped_input)::MixedModel
+#form = @formula(value ~ AT_summer + ST_summer + (AT_summer + ST_summer | year/variable) + (AT_summer + ST_summer | id));
+orm = @formula(value ~ AT + ST + (AT + ST | year/variable) + (AT + ST | id));
+gm2 = fit(MixedModel, form, reshaped_input)
 raneffects = DataFrame(raneftables(gm2)[1])
 
 intercept_df = DataFrame(
@@ -44,6 +45,7 @@ intercept_df = DataFrame(
 	"ranef" => raneffects[:, 2]
 )
 
+set_default_plot_size(55cm, 20cm)
 Gadfly.plot(
 	intercept_df,
 	x = :class,

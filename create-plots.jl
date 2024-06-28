@@ -24,7 +24,7 @@ function reduced_scatter(at, st, var)
 		legend = true, marker = (:circle, 8), grid = true)
 end
 
-reduced_scatter(at_daily, st_daily, "position")
+reduced_scatter(at_date, st_date, "position")
 reduced_scatter(at_monthly, st_monthly, "position")
 reduced_scatter(at_seasonal, st_seasonal, "position")
 reduced_scatter(at_annual, st_annual, "position")

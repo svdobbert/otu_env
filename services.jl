@@ -1,7 +1,7 @@
 # calculate mean and skip missing values
 function mean_skipmissing(x)
-    non_missing = skipmissing(x)
-    return isempty(non_missing) ? missing : mean(non_missing)
+	non_missing = skipmissing(x)
+	return isempty(non_missing) ? missing : mean(non_missing)
 end
 
 # format column as date
@@ -83,4 +83,41 @@ function reshape_df(df, year)
 	env = create_env(at_date, st_date, year, ids)
 	env.id = env.id .* "_" .* [s[3:4] for s in env.year]
 	leftjoin!(result, env, on = :id, makeunique = true)
+end
+
+function name_positions(df)
+	df.position = replace(string.(df.position)) do s
+		r = s == "A" ? "ridge" : s
+		r = s == "B" ? "depression" : r
+		s == "C" || s == "D" ? "slope" : r
+	end
+	df
+end
+
+# function name_positions(df)
+# 	df.position = replace(string.(df.position)) do s
+# 		r = s == "A" ? "ridge" : s
+# 		r = s == "B" ? "depression" : r
+# 		r = s == "C" ? "south-facing slope" : r
+# 		s == "D" ? "north-facing slope" : r
+# 	end
+# 	df
+# end
+
+function name_months(df)
+	df.month = replace(string.(df.month)) do s
+		r = s == "1" || s == 1 ? "Jan" : s
+		r = s == "2" || s == 2  ? "Feb" : r
+		r = s == "3" || s == 3 ? "Mar" : r
+		r = s == "4" || s == 4 ? "Apr" : r
+		r = s == "5" || s == 5 ? "May" : r
+		r = s == "6" || s == 6 ? "Jun" : r
+		r = s == "7" || s == 7 ? "Jul" : r
+		r = s == "8" || s == 8 ? "Aug" : r
+		r = s == "9" || s == 9 ? "Sep" : r
+		r = s == "10" || s == 10 ? "Oct" : r
+		r = s == "11" || s == 11 ? "Nov" : r
+		s == "12" || s == 12 ? "Dec" : r
+	end
+	df
 end
