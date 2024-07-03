@@ -8,9 +8,11 @@ cd(".")
 using CSVFiles          # read/write CSV and similar formats
 using Downloads         # file downloads
 using DataFrames        # versatile tabular data format
+using DataFramesMeta
 using GZip              # utilities for compressed files
 using Printf
 using Cairo
+using Colors
 
 # inport data
 at = DataFrame(load(File(format"CSV", "./input-data/air-temperature.csv.gz")))

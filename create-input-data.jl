@@ -2,11 +2,11 @@ using Dates             # provides types for working with dates
 using Statistics        # basic statistics functionality.
 using MultivariateStats # for multivariate statistics and data analysis
 using Plots             # powerful convenience for visualization in Julia
-using LinearAlgebra		# common and useful linear algebra operations 
-using Gadfly			# a system for plotting and visualization 
-using Compose			# a declarative vector graphics system written in Julia
-using ColorSchemes		# a set of pre-defined ColorSchemes
-using PlotlyJS			# interface to the [plotly.js] visualization library
+using LinearAlgebra# common and useful linear algebra operations 
+using Gadfly# a system for plotting and visualization 
+using Compose# a declarative vector graphics system written in Julia
+using ColorSchemes# a set of pre-defined ColorSchemes
+using PlotlyJS# interface to the [plotly.js] visualization library
 
 at_date = format_date(at, "date time")
 st_date = format_date(st, "date time")
@@ -25,6 +25,17 @@ st_monthly = agg_function(st_date, "month")
 env_monthly_bind = bind_env(at_monthly, st_monthly)
 env_monthly = reshape(at_monthly, st_monthly)
 
+# monthly by year
+at_date.monthYear = at_date.month .* "_" .* at_date.year
+at_monthYear = agg_function(at_date, "monthYear")
+st_date.monthYear = st_date.month .* "_" .* st_date.year
+st_monthYear = agg_function(st_date, "monthYear")
+
+env_monthYear_bind = bind_env(at_monthYear, st_monthYear)
+env_monthYear = reshape(at_monthYear, st_monthYear)
+env_monthYear.month = getindex.(split.(env_monthYear.Group, "_"), 1)
+env_monthYear.year = getindex.(split.(env_monthYear.Group, "_"), 2)
+
 # seasonal
 at_seasonal = agg_function(at_date, "season")
 st_seasonal = agg_function(st_date, "season")
@@ -39,7 +50,7 @@ st_annual = agg_function(st_date, "year")
 env_annual_bind = bind_env(at_annual, st_annual)
 env_annual = reshape(at_annual, st_annual)
 
-  
+
 at_reduced = reduce_dim(at_daily)
 st_reduced = reduce_dim(st_daily)
 
@@ -97,10 +108,29 @@ plot_input_df = [df_2020; df_2021; df_2022]
 class_names = class_mean[!, 1]
 
 marker_types = [:circle, :diamond]
-class = class_names[3]
+class = class_names[5]
 
 reshaped_input = [
 	reshape_df(split_df[1], "2020");
 	reshape_df(split_df[2], "2021");
 	reshape_df(split_df[3], "2022")
 ]
+
+function reshape_monthly_df(df)
+	result = stack(df)
+	repeated_dfs = [hcat(result, DataFrame(month = fill(i, nrow(result)))) for i in 1:12]
+	repeated_df = vcat(repeated_dfs...)
+	repeated_df.site = getindex.(split.(repeated_df.id, "_"), 1)
+	repeated_df.id = repeated_df.site .* "_" .* [s[3:4] for s in repeated_df.year] .* "_" .* string.(repeated_df.month)
+
+	env = env_monthYear
+	env.id = env.site .* "_" .* [s[3:4] for s in env.year] .* "_" .* env.month
+	leftjoin!(repeated_df, env, on = :id, makeunique = true)
+end
+
+reshaped_monthly = [
+	reshape_monthly_df(split_df[1]);
+	reshape_monthly_df(split_df[2]);
+	reshape_monthly_df(split_df[3])
+]
+

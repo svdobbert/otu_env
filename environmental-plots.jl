@@ -6,6 +6,7 @@ env = name_positions(env)
 env = name_months(env)
 env.year = parse.(Int64, env.year)
 env = filter(row -> row.year > 2018, env)
+env = year_by_season(env)
 
 # boxplots
 set_default_plot_size(17cm, 15cm)
@@ -84,7 +85,7 @@ set_default_plot_size(30cm, 17cm)
 boxplot3a = Gadfly.plot(
 	dropmissing(env),
 	xgroup = :season,
-	x = :year,
+	x = :year_season,
 	y = :AT,
 	color = :position,
 	Guide.xlabel("Month"),
@@ -113,10 +114,6 @@ boxplot3 = vstack(boxplot3a, boxplot3b)
 draw(PNG("./output-data/environmental-plots/env_boxplot_seasons.png", 30cm, 30cm), boxplot3)
 draw(PDF("./output-data/environmental-plots/env_boxplot_seasons.pdf", 30cm, 30cm), boxplot3)
 
-# TODO
-# handle winter (year correctly)
-
-
 # lineplots
 env.group = env.day .* env.position
 env_mean = agg_function(env, "group")
@@ -139,7 +136,7 @@ function lineplot_env_first(df, year, var, label, season_intercepts)
 		Guide.ylabel(label),
 		Guide.xlabel(year),
 		Guide.xticks(ticks = month_ticks),
-		Scale.y_continuous(minvalue = -20, maxvalue = 30),
+		Scale.y_continuous(minvalue = -15, maxvalue = 22),
 		Scale.x_continuous(minvalue = 0, maxvalue = 365, labels = x -> month_levels[round(Int, x / 30, RoundUp)]),
 		Scale.color_discrete_manual("#5377C9", "#DF8A56", "#82CA70", "#F7F06D", "#9A90CB"),
 		Geom.line,
@@ -162,7 +159,7 @@ function lineplot_env(df, year, var, season_intercepts)
 		Guide.xlabel(year),
 		Guide.yticks(ticks = nothing),
 		Guide.xticks(ticks = month_ticks),
-		Scale.y_continuous(minvalue = -20, maxvalue = 30),
+		Scale.y_continuous(minvalue = -15, maxvalue = 22),
 		Scale.x_continuous(minvalue = 0, maxvalue = 365, labels = x -> month_levels[round(Int, x / 30, RoundUp)]),
 		Scale.color_discrete_manual("#5377C9", "#DF8A56", "#82CA70", "#F7F06D", "#9A90CB"),
 		Geom.line,
@@ -187,7 +184,7 @@ function lineplot_env_last(df, year, var, season_intercepts)
 		Scale.color_discrete_manual("#5377C9", "#DF8A56", "#82CA70", "#F7F06D", "#9A90CB"),
 		Theme(background_color = "white"),
 		Guide.xticks(ticks = month_ticks),
-		Scale.y_continuous(minvalue = -20, maxvalue = 30),
+		Scale.y_continuous(minvalue = -15, maxvalue = 22),
 		Scale.x_continuous(minvalue = 0, maxvalue = 365, labels = x -> month_levels[round(Int, x / 30, RoundUp)]),
 		Geom.line,
 		Geom.vline(size = 0.2mm, style = [:solid], color = [color_bg]),

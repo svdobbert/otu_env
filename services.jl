@@ -85,6 +85,7 @@ function reshape_df(df, year)
 	leftjoin!(result, env, on = :id, makeunique = true)
 end
 
+# replace position names
 function name_positions(df)
 	df.position = replace(string.(df.position)) do s
 		r = s == "A" ? "ridge" : s
@@ -103,6 +104,20 @@ end
 # 	end
 # 	df
 # end
+
+# replace position names
+function name_regions(df)
+	df.region = replace(string.(df.region)) do s
+		r = s == "E" ? "Vågå/Innlandet region" : s
+		s == "W" ? "Geiranger/Møre og Romsdal region" : r
+	end
+	df
+end
+
+# create year-columnwith winter months assigned to previous year
+function year_by_season(df)
+	@transform(df, year_season = ifelse.((:month .== "Jan") .| (:month .== "Feb"), (:year .- 1), :year))
+end
 
 function name_months(df)
 	df.month = replace(string.(df.month)) do s
